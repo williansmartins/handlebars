@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Beer List</title>
+    <link href="Site.css" rel="stylesheet" />
+    <script src="handlebars.js"></script>
+    <script src="jquery-2.0.0.min.js"></script>
+
+    <script type="text/x-handlebars-template" id="template">
+        {{#list Beers}}
+            Name: {{Name}} - Abv: {{Italize Abv}} {{ShowStar Favorite}}
+            {{#with LastCheckin}}
+                <p>Drinked by: {{Twitter Drinker}} at {{When}}</p>
+            {{/with}}     
+        {{/list}}
+    </script>
+</head>
+<body>
+    <div id="content" style="display: none;">
+        <strong>Our Beers...</strong><br />
+
+    </div>
+    <script type="text/javascript">
+
+        (function () {
+            Handlebars.registerHelper('Italize', function (value) {
+                return new Handlebars.SafeString(
+                    "<em>" + value + "</em>");
+            });
+
+            Handlebars.registerHelper('ShowStar', function (value) {
+                if (value) {
+                    return new Handlebars.SafeString(
+                        "<img src='favorite.png' alt='i love this beer!' />");
+                } else return "";
+            });
+
+            Handlebars.registerHelper('Twitter', function (value) {
+                return new Handlebars.SafeString('<a href="http://twitter.com/' + value.substr(1) + '">' + value + '</a>');
+            });
+
+            Handlebars.registerHelper('with', function (context, options) {
+                return options.fn(context);
+            });
+
+            Handlebars.registerHelper('list', function (context, block) {
+                var ret = "<ul>";
+                for (var i = 0, j = context.length; i < j; i++) {
+                    ret = ret + "<li>" + block.fn(context[i]) + "</li>";
+                }
+                return ret + "</ul>";
+            });
+        })();
+
+
+        $(function () {
+            var stemplate = $("#template").html();
+            var tmpl = Handlebars.compile(stemplate);
+            var xhr = $.ajax({
+                url: 'Beers.json'
+            });
+
+            xhr.done(function (data) {
+                var ctx = {};
+                ctx.Beers = data;
+                var html = tmpl(ctx);
+                $("#content").append(html);
+                $("#content").show();
+            });
+        });
+
+    </script>
+
+</body>
+</html>

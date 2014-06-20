@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Beer List</title>
+    <link href="Site.css" rel="stylesheet" />
+    <script src="handlebars.js"></script>
+    <script src="jquery-2.0.0.min.js"></script>
+    
+    <script type="text/x-handlebars-template" id="template">
+        {{# each Beers}}
+            {{# if Favorite}}
+            Name: {{Name}} - Abv: {{Italize Abv}} <br />
+            {{/if}}
+        {{/each}}
+
+    </script>
+</head>
+    <body>
+        <div id="content" style="display:none;">
+            <strong>Our Beers...</strong><br/>  
+            
+        </div>
+        <script type="text/javascript">
+
+            (function() {
+                Handlebars.registerHelper('Italize', function(value) {
+                    return new Handlebars.SafeString(
+                        "<em>" + value + "</em>");
+                });
+            })();
+
+
+            $(function() {
+                var stemplate = $("#template").html();
+                var tmpl = Handlebars.compile(stemplate);
+                var xhr = $.ajax({
+                    url: 'Beers.json'
+                });
+
+                xhr.done(function (data) {
+                    var ctx = {};
+                    ctx.Beers = data;
+                    var html = tmpl(ctx);
+                    $("#content").append(html);
+                    $("#content").show();
+                });
+            });
+
+        </script>    
+
+    </body>
+</html>
